@@ -83,7 +83,6 @@ def train_model(
     print(Fore.BLUE + "\nTraining model..." + Style.RESET_ALL)
 
     es = EarlyStopping(
-        monitor="val_loss",
         patience=patience,
         restore_best_weights=True,
     )
