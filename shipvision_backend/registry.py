@@ -20,7 +20,7 @@ def save_model(model: keras.Model = None) -> None:
 
 
     # Save model locally
-    model_path = os.path.join(LOCAL_REGISTRY_PATH, "models", f"{timestamp}.h5")
+    model_path = os.path.expanduser(os.path.join(LOCAL_REGISTRY_PATH,'models',f"{timestamp}.h5"))
     model.save(model_path)
 
     print("✅ Model saved locally")
@@ -41,7 +41,7 @@ def load_model() -> keras.Model:
 
 
     # Get the latest model version name by the timestamp on disk
-    local_model_directory = os.path.join(LOCAL_REGISTRY_PATH, "models")
+    local_model_directory = os.path.expanduser(os.path.join(LOCAL_REGISTRY_PATH,'models'))
     local_model_paths = glob.glob(f"{local_model_directory}/*")
 
     if not local_model_paths:
