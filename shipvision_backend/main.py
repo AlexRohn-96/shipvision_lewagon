@@ -8,21 +8,25 @@ from shipvision_backend.modeling import *
 from shipvision_backend.registry import *
 
 def transform_train():
+    """ returns X_test_preproc, y_test with a shape (n_samples, 80, 80, 3) """
    #define the path to Json file
     json_path = os.path.expanduser(os.path.join(LOCAL_REGISTRY_PATH,'raw_data','shipsnet.json'))
 
     with open(json_path) as file:
         data= json.load(file)
 
+    #define the feature and target
     X= data['data']
     y=data['labels']
 
+    #split the data into X_train, X_test, y_train, y_test
     X_train,X_test, y_train, y_test= train_test_split(X,
                                                       y,
                                                       random_state=43,
                                                     test_size=0.3,
                                                     stratify=y)
 
+    #transform features into an array
     X_train_preproc= transform(X_train)
 
     X_test_preproc= transform(X_test)
@@ -57,7 +61,11 @@ def transform_train():
 
 def evaluation(X_test_preproc, y_test):
 
+    """ returns the accuracy of the model """
+    #load the model
     model=load_model()
+
+    #evaluate the model
     accuracy= evaluate_model (model,
                     X_test_preproc,
                     y_test,
@@ -65,12 +73,12 @@ def evaluation(X_test_preproc, y_test):
     print('The accuracy is: ' , accuracy)
 
 def pred( X_pred:list )-> int:
-
-
+    """ returns the prediction  given a list of pixel"""
     X_pred_preproc= transform(X_pred)
-
+    #load the model
     model= load_model()
 
+    #predict from an array and return 0 or 1
     y_pred= model.predict(X_pred_preproc)
 
     print('✅ Prediction :', y_pred[0][0])
