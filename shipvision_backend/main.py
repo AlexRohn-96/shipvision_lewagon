@@ -1,11 +1,11 @@
-from preprocessing import transform
+from shipvision_backend.preprocessing import *
 import json
 import os
-from params import *
+from shipvision_backend.params import *
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
-from modeling import *
-from registry import *
+from shipvision_backend.modeling import *
+from shipvision_backend.registry import *
 
 def transform_train():
     """ returns X_test_preproc, y_test with a shape (n_samples, 80, 80, 3) """
@@ -74,8 +74,6 @@ def evaluation(X_test_preproc, y_test):
 
 def pred( X_pred:list )-> int:
     """ returns the prediction  given a list of pixel"""
-
-    #transform a list of pixel into an array
     X_pred_preproc= transform(X_pred)
     #load the model
     model= load_model()
@@ -86,8 +84,3 @@ def pred( X_pred:list )-> int:
     print('✅ Prediction :', y_pred[0][0])
 
     return y_pred[0][0]
-
-
-X_test_preproc, y_test= transform_train()
-
-evaluation(X_test_preproc,y_test)
