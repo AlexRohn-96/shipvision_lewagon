@@ -1,11 +1,11 @@
-from preprocessing import transform
+from shipvision_backend.preprocessing import *
 import json
 import os
-from params import *
+from shipvision_backend.params import *
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
-from modeling import *
-from registry import *
+from shipvision_backend.modeling import *
+from shipvision_backend.registry import *
 
 def transform_train():
    #define the path to Json file
@@ -66,6 +66,7 @@ def evaluation(X_test_preproc, y_test):
 
 def pred( X_pred:list )-> int:
 
+
     X_pred_preproc= transform(X_pred)
 
     model= load_model()
@@ -75,8 +76,3 @@ def pred( X_pred:list )-> int:
     print('✅ Prediction :', y_pred[0][0])
 
     return y_pred[0][0]
-
-
-X_test_preproc, y_test= transform_train()
-
-evaluation(X_test_preproc,y_test)

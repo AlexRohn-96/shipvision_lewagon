@@ -3,7 +3,7 @@ import glob
 import os
 import time
 import pickle
-from params import *
+from shipvision_backend.params import *
 from colorama import Fore, Style
 
 
@@ -49,7 +49,10 @@ def load_model() -> keras.Model:
 
     most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
 
+    print(f"Trying to load model from: {most_recent_model_path_on_disk}")
+
     print(Fore.BLUE + f"\nLoad latest model from disk..." + Style.RESET_ALL)
+
 
     latest_model = keras.models.load_model(most_recent_model_path_on_disk)
 
