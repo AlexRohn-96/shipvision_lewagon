@@ -1,5 +1,5 @@
 reinstall_package:
-	@pip uninstall -y shipvision || :
+	@pip uninstall -y shipvision_backend || :
 	@pip install -e .
 
 clean:
@@ -12,3 +12,6 @@ clean:
 	@rm -f **/.DS_Store
 	@rm -f **/*Zone.Identifier
 	@rm -fr **/.ipynb_checkpoints
+
+run_api:
+	uvicorn api.fast:app --reload
