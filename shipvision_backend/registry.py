@@ -4,6 +4,7 @@ import os
 import time
 import pickle
 from params import *
+from colorama import Fore, Style
 
 
 
@@ -29,7 +30,7 @@ def save_model(model: keras.Model = None) -> None:
 
 
 
-def load_model(stage="Production") -> keras.Model:
+def load_model() -> keras.Model:
     """
     Return a saved model:
     - locally (latest one in alphabetical order)
