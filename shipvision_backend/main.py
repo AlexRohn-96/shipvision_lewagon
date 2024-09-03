@@ -59,6 +59,9 @@ def transform_train():
 
     return X_test_preproc, y_test
 
+
+
+
 def evaluation(X_test_preproc, y_test):
 
     """ returns the accuracy of the model """
@@ -73,7 +76,7 @@ def evaluation(X_test_preproc, y_test):
     print('The accuracy is: ' , accuracy)
 
 def pred( X_pred:list )-> int:
-    """ returns the prediction  given a list of pixel"""
+    """ Returns the prediction (ship or no ship) given a list of RGB pixels corresponding"""
     X_pred_preproc= transform(X_pred)
     #load the model
     model= load_model()
@@ -81,6 +84,9 @@ def pred( X_pred:list )-> int:
     #predict from an array and return 0 or 1
     y_pred= model.predict(X_pred_preproc)
 
-    print('✅ Prediction :', y_pred[0][0])
+    predicted_class = np.argmax(y_pred, axis=1)
 
-    return y_pred[0][0]
+
+    print('✅ Prediction :',  predicted_class[0])
+
+    return predicted_class[0]
