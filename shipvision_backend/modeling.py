@@ -41,7 +41,7 @@ def initialize_model(input_shape: tuple) -> Model:
     model.add(layers.Dense(10, activation='relu'))
 
     ### Last layer - Classification Layer with 2 outputs
-    model.add(layers.Dense(2, activation='sigmoid'))
+    model.add(layers.Dense(1, activation='sigmoid'))
 
     print("✅ Model initialized")
 
