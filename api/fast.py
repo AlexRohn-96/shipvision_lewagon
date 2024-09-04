@@ -19,6 +19,10 @@ def predict(request: PredictRequest):
     # This endpoint receives a list of integers (pixels) and returns a prediction.
     # “”"
     # Call the prediction function
-    #breakpoint()
+
+
+
     y_pred = pred(request.X)
+
+
     return {"Prediction": int(y_pred)}
