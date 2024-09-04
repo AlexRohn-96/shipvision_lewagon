@@ -23,12 +23,6 @@ def initialize_model():
 
     model.add(layers.Rescaling(1./255, input_shape = (80, 80, 3)))
 
-    # Data Augmentation Layers
-
-    model.add(layers.RandomFlip("horizontal"))
-    model.add(layers.RandomZoom(0.1))
-    model.add(layers.RandomTranslation(0.2, 0.2))
-    model.add(layers.RandomRotation(0.1))
 
 ### First Convolution & MaxPooling
     model.add(layers.Conv2D(8, (4,4), input_shape=(80, 80, 3), padding='same', activation="relu"))
