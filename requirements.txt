@@ -1,5 +1,5 @@
 # API
-fastapi==0.108.0
+fastapi
 pytz
 uvicorn
 python-multipart
