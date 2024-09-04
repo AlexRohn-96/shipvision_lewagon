@@ -18,21 +18,33 @@ print(f"\n✅ TensorFlow loaded ({round(end - start, 2)}s)")
 
 
 
-
-
-def initialize_model(input_shape: tuple) -> Model:
-    """
-    Initialize the CNN with random weights
-    """
+def initialize_model():
     model = Sequential()
 
-    ### First Convolution & MaxPooling
-    model.add(layers.Conv2D(8, (4,4), input_shape=input_shape, padding='same', activation="relu"))
+    model.add(layers.Rescaling(1./255, input_shape = (80, 80, 3)))
+
+    # Data Augmentation Layers
+
+    model.add(layers.RandomFlip("horizontal"))
+    model.add(layers.RandomZoom(0.1))
+    model.add(layers.RandomTranslation(0.2, 0.2))
+    model.add(layers.RandomRotation(0.1))
+
+### First Convolution & MaxPooling
+    model.add(layers.Conv2D(8, (4,4), input_shape=(80, 80, 3), padding='same', activation="relu"))
     model.add(layers.MaxPool2D(pool_size=(2,2)))
 
     ### Second Convolution & MaxPooling
     model.add(layers.Conv2D(16, (3,3), activation="relu"))
     model.add(layers.MaxPool2D(pool_size=(2,2)))
+
+    ### Third Convolution & MaxPooling
+    model.add(layers.Conv2D(filters = 32, kernel_size = (3,3), activation="relu", padding = "same"))
+    model.add(layers.MaxPooling2D(pool_size=(2, 2), padding = "same") )
+
+    ### fourth Convolution & MaxPooling
+    model.add(layers.Conv2D(filters = 64, kernel_size = (3,3), activation="relu", padding = "same"))
+    model.add(layers.MaxPooling2D(pool_size=(2, 2), padding = "same") )
 
     ### Flattening
     model.add(layers.Flatten())
@@ -41,13 +53,11 @@ def initialize_model(input_shape: tuple) -> Model:
     model.add(layers.Dense(10, activation='relu'))
 
     ### Last layer - Classification Layer with 2 outputs
-    model.add(layers.Dense(2, activation='sigmoid'))
+    model.add(layers.Dense(1, activation='sigmoid'))
 
     print("✅ Model initialized")
 
     return model
-
-
 
 
 
