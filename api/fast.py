@@ -19,6 +19,8 @@ def predict(X: list):
     Based on that, we call the pred function from main.py to load the most recent model, preprocess X, and predict whether X is a ship or not.
     """
 
+
+
     y_pred = pred(X)
 
     return {'Prediction': int(y_pred)}
