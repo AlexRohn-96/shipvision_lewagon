@@ -27,6 +27,6 @@ raw_data/
 .credentials
 secrets.toml
 *.json
-
+.envrc
 # User defined extras
 # Complete to your desire
