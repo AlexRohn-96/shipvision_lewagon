@@ -6,6 +6,9 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from shipvision_backend.modeling import *
 from shipvision_backend.registry import *
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 def transform_train():
     """ returns X_test_preproc, y_test with a shape (n_samples, 80, 80, 3) """
@@ -15,9 +18,16 @@ def transform_train():
     with open(json_path) as file:
         data= json.load(file)
 
+
+    data_df = pd.DataFrame(data)
+
+
+
     #define the feature and target
     X= data['data']
-    y=data['labels']
+    y=data_df['labels']
+
+
 
     #split the data into X_train, X_test, y_train, y_test
     X_train,X_test, y_train, y_test= train_test_split(X,
@@ -31,9 +41,8 @@ def transform_train():
 
     X_test_preproc= transform(X_test)
 
-    # Transform target into array
-    y_train = to_categorical(y_train, num_classes=2)
-    y_test = to_categorical(y_test, num_classes=2)
+    # Transform target into a dataframe
+
 
 
 
@@ -77,16 +86,44 @@ def evaluation(X_test_preproc, y_test):
 
 def pred( X_pred:list )-> int:
     """ Returns the prediction (ship or no ship) given a list of RGB pixels corresponding"""
+
+#     image_array = np.array(X_pred)
+
+# # Extract the R, G, and B channels
+#     R_data = image_array[0:6400]
+#     G_data = image_array[6400:2*6400]
+#     B_data = image_array[2*6400:]
+
+#     # Reshape each channel into an 80x80 array
+#     R = R_data.reshape((80, 80))
+#     G = G_data.reshape((80, 80))
+#     B = B_data.reshape((80, 80))
+
+#     # Stack the R, G, and B channels to form the image
+#     image_rgb = np.stack((R, G, B), axis=-1)
+
+#     print(image_rgb.shape)
+
+#     # Plot the image
+#     plt.imshow(image_rgb)
+#     plt.axis('off')  # Optional: Hide axes
+#     plt.show()
+
+
     X_pred_preproc= transform(X_pred)
     #load the model
     model= load_model()
 
     #predict from an array and return 0 or 1
-    y_pred= model.predict(X_pred_preproc)
+    y_pred = model.predict(X_pred_preproc)
 
-    predicted_class = np.argmax(y_pred, axis=1)
+    if y_pred[0] > 0.5:
+        predicted_class = 1
+
+    else:
+        predicted_class = 0
 
 
-    print('✅ Prediction :',  predicted_class[0])
+    print('✅ Prediction :',  predicted_class)
 
-    return predicted_class[0]
+    return predicted_class
