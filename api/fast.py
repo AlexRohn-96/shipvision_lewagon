@@ -9,7 +9,7 @@ app = FastAPI()
 class PredictRequest(BaseModel):
     X: list[int]
 
-@app.post("/")
+@app.get("/")
 def index():
     return {"ok": True}
 

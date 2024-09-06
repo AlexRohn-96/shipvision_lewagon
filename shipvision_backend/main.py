@@ -111,7 +111,7 @@ def pred( X_pred:list )-> int:
     y_pred= model.predict(X_pred_preproc)
 
     predicted_class = np.argmax(y_pred, axis=1)
-    breakpoint()
+
 
     print('✅ Prediction :',  predicted_class[0])
 
