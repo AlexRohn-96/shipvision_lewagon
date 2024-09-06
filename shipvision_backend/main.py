@@ -123,7 +123,6 @@ def pred( X_pred:list )-> int:
     else:
         predicted_class = 0
 
-
     print('✅ Prediction :',  predicted_class)
 
     return predicted_class
