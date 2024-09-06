@@ -8,6 +8,7 @@ from shipvision_backend.modeling import *
 from shipvision_backend.registry import *
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 def transform_train():
     """ returns X_test_preproc, y_test with a shape (n_samples, 80, 80, 3) """
@@ -17,9 +18,16 @@ def transform_train():
     with open(json_path) as file:
         data= json.load(file)
 
+
+    data_df = pd.DataFrame(data)
+
+
+
     #define the feature and target
     X= data['data']
-    y=data['labels']
+    y=data_df['labels']
+
+
 
     #split the data into X_train, X_test, y_train, y_test
     X_train,X_test, y_train, y_test= train_test_split(X,
@@ -33,9 +41,8 @@ def transform_train():
 
     X_test_preproc= transform(X_test)
 
-    # Transform target into array
-    y_train = to_categorical(y_train, num_classes=2)
-    y_test = to_categorical(y_test, num_classes=2)
+    # Transform target into a dataframe
+
 
 
 
@@ -108,11 +115,14 @@ def pred( X_pred:list )-> int:
     model= load_model()
 
     #predict from an array and return 0 or 1
-    y_pred= model.predict(X_pred_preproc)
+    y_pred = model.predict(X_pred_preproc)
 
-    predicted_class = np.argmax(y_pred, axis=1)
+    if y_pred[0] > 0.5:
+        predicted_class = 1
 
+    else:
+        predicted_class = 0
 
-    print('✅ Prediction :',  predicted_class[0])
+    print('✅ Prediction :',  predicted_class)
 
-    return predicted_class[0]
+    return predicted_class

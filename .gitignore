@@ -27,6 +27,6 @@ raw_data/
 .credentials
 secrets.toml
 *.json
-
+.env.yaml
 # User defined extras
 # Complete to your desire
