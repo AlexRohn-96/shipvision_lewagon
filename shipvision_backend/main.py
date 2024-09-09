@@ -112,12 +112,10 @@ def pred( X_pred:list )-> int:
 
     X_pred_preproc= transform(X_pred)
     #load the model
-    model= load_model()
+    model= get_model_instance()
 
     #predict from an array and return 0 or 1
     y_pred = model.predict(X_pred_preproc)
-
-    breakpoint()
 
     if y_pred[0] > 0.5:
         predicted_class = 1

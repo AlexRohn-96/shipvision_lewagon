@@ -20,8 +20,6 @@ def predict(request: PredictRequest):
     # “”"
     # Call the prediction function
 
-
-
     y_pred = pred(request.X)
 
 

@@ -13,8 +13,22 @@ load_dotenv()
 
 # Get variables from .env
 BUCKET_NAME = os.getenv('BUCKET_NAME')
+model_instance = None  # This will hold the singleton model instance
 
 logging.basicConfig(filename='shipvision_backend/app.log', level=logging.DEBUG,format='%(asctime)s - %(levelname)s - %(message)s')
+
+def get_model_instance():
+    """
+    Loads the model from the cloud or local storage if it's not already loaded.
+    Returns the existing model instance if already loaded.
+    """
+    global model_instance
+    if model_instance is None:
+        logging.debug("Model instance is not loaded yet, loading now...")
+        model_instance = load_model()
+    else:
+        logging.debug("Returning the already loaded model instance")
+    return model_instance
 
 def upload_to_gcs(local_path: str, bucket_name: str, destination_blob_name: str) -> None:
     """Uploads a file to Google Cloud Storage"""
@@ -86,10 +100,10 @@ def load_model_from_gcs() -> keras.Model:
     Attempt to load the most recent model from Google Cloud Storage (GCS).
     Return the model if found, or None if no model is found in GCS.
     """
-    breakpoint()
+    #breakpoint()
     client = storage.Client()
     bucket = client.get_bucket(BUCKET_NAME)
-    breakpoint()
+    #breakpoint()
     blobs = list(bucket.list_blobs(prefix=BUCKET_NAME))
     if not blobs:
         print("❌ No models found in GCS")
