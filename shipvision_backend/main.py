@@ -47,7 +47,7 @@ def transform_train():
 
 
     # initializing the model
-    model= initialize_model(input_shape= (80,80,3))
+    model= initialize_model()
 
     #compiling the model
     model= compile_model(model)
