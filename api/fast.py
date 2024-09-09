@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+
+from fastapi import FastAPI, File, UploadFile
 from pydantic import BaseModel
+from PIL import Image
 from shipvision_backend.preprocessing import *
 from shipvision_backend.registry import *
 from shipvision_backend.main import *
@@ -12,6 +14,36 @@ class PredictRequest(BaseModel):
 @app.get("/")
 def index():
     return {"ok": True}
+
+
+@app.post("/predict-image")
+async def predict_image(file: UploadFile = File(...)):
+    """
+    This endpoint receives an image file from a web app and returns a prediction.
+    """
+    # Open the image using PIL
+    image = Image.open(file.file)
+
+
+
+    model= get_model_instance()
+
+    print("Passed model loading")
+
+
+    predictions ,coordinates= generate_scene_with_model_gray_scale(image,model)
+
+
+
+    # Convert NumPy array of predictions to a list
+    predictions_list = predictions.tolist()
+    # Return both coordinates and predictions in the response
+    return {
+        'coordinates': coordinates,  # List of tuples (x, y)
+        'predictions': predictions_list  # List of prediction values
+    }
+
+
 
 @app.post("/predict")
 def predict(request: PredictRequest):

@@ -3,12 +3,13 @@ import json
 import os
 from shipvision_backend.params import *
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.utils import to_categorical
 from shipvision_backend.modeling import *
 from shipvision_backend.registry import *
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from PIL import Image
+import time
 
 def transform_train():
     """ returns X_test_preproc, y_test with a shape (n_samples, 80, 80, 3) or (n_samples, 80, 80, 1) """
@@ -124,3 +125,41 @@ def pred( X_pred:list )-> int:
     print('✅ Prediction :',  predicted_class)
 
     return predicted_class
+
+def generate_scene_with_model_gray_scale(image, model):
+    # Define parameters
+    patch_size = 80
+    stride = 20
+
+    # Transform the image into a numpy array
+    img_array = np.array(image)
+
+    # Initialize variables
+    img_height, img_width = img_array.shape[:2]
+    patches = []
+    coordinates = []
+
+    breakpoint()
+
+    # Extract patches and their coordinates
+    for y in range(0, img_height - patch_size + 1, stride):
+        for x in range(0, img_width - patch_size + 1, stride):
+            sub_image = img_array[y:y+patch_size, x:x+patch_size]
+            # Convert to grayscale
+            gray_patch = Image.fromarray(sub_image).convert('L')
+            # Convert the grayscale patch to a numpy array and normalize
+            gray_patch_array = np.array(gray_patch)
+            # Reshape to (80, 80, 1) to match the model input
+            gray_patch_array = gray_patch_array.reshape(80, 80, 1)
+            patches.append(gray_patch_array)
+            coordinates.append((x, y))
+    # Convert patches to numpy array for batch prediction
+    patches_array = np.array(patches)
+    # Perform batch prediction
+    start_time = time.time()
+    predictions = model.predict(patches_array, verbose=0)
+    prediction_time = time.time() - start_time
+    print(f'Prediction time: {prediction_time:.2f} seconds')
+
+    breakpoint()
+    return predictions, coordinates
