@@ -37,3 +37,46 @@ def transform(X,y=None):
 
 
             return image_rgb
+
+
+
+# Function to convert RGB to grayscale, reshape, and normalize
+def rgb_to_grayscale(X):
+    X_gray = []
+
+    element_1 = X[0]
+
+    if isinstance(element_1, list):
+
+        for img in X:
+            # Split the flattened list into R, G, and B channels
+            R = np.array(img[:6400])
+            G = np.array(img[6400:12800])
+            B = np.array(img[12800:])
+
+            # Convert to grayscale using the luminosity method: 0.2989*R + 0.5870*G + 0.1140*B
+            gray_img = 0.2989 * R + 0.5870 * G + 0.1140 * B
+
+
+            # Reshape to (80, 80, 1)
+            gray_img = gray_img.reshape(80, 80, 1)
+
+            X_gray.append(gray_img)
+
+        return np.array(X_gray)
+
+    else:
+         # Split the flattened list into R, G, and B channels
+            R = np.array(X[:6400])
+            G = np.array(X[6400:12800])
+            B = np.array(X[12800:])
+
+            # Convert to grayscale using the luminosity method: 0.2989*R + 0.5870*G + 0.1140*B
+            gray_img = 0.2989 * R + 0.5870 * G + 0.1140 * B
+
+
+            # Reshape to (80, 80, 1)
+            gray_img = gray_img.reshape(80, 80, 1)
+            gray_img = gray_img.reshape(1, 80, 80, 1)
+
+            return gray_img

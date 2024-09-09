@@ -3,6 +3,7 @@ import time
 from colorama import Fore, Style
 from typing import Tuple
 from shipvision_backend.params import *
+from tensorflow.keras.metrics import Precision, Recall
 
 
 # Timing the TF import
@@ -18,11 +19,11 @@ print(f"\n✅ TensorFlow loaded ({round(end - start, 2)}s)")
 
 
 
-def initialize_model():
+def initialize_model_1():
     model = Sequential()
 
 
-### First Convolution & MaxPooling
+    ### First Convolution & MaxPooling
     model.add(layers.Conv2D(8, (4,4), input_shape=(80, 80, 3), padding='same', activation="relu"))
     model.add(layers.MaxPool2D(pool_size=(2,2)))
 
@@ -53,7 +54,37 @@ def initialize_model():
 
 
 
-def compile_model(model: Model, learning_rate=0.0005) -> Model:
+def initialize_model_2():
+    model = Sequential()
+    model.add(layers.Conv2D(32 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu' , input_shape = (80,80,1)))
+    model.add(layers.BatchNormalization())
+    model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(layers.Conv2D(64 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(layers.Dropout(0.1))
+    model.add(layers.BatchNormalization())
+    model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(layers.Conv2D(64 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(layers.BatchNormalization())
+    model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(layers.Conv2D(128 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(layers.Dropout(0.2))
+    model.add(layers.BatchNormalization())
+    model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(layers.Conv2D(256 , (3,3) , strides = 1 , padding = 'same' , activation = 'relu'))
+    model.add(layers.Dropout(0.2))
+    model.add(layers.BatchNormalization())
+    model.add(layers.MaxPool2D((2,2) , strides = 2 , padding = 'same'))
+    model.add(layers.Flatten())
+    model.add(layers.Dense(units = 128 , activation = 'relu'))
+    model.add(layers.Dropout(0.2))
+    model.add(layers.Dense(units = 1 , activation = 'sigmoid'))
+
+
+    return model
+
+
+
+def compile_model_1(model: Model) -> Model:
     """
     Compile the CNN
     """
@@ -67,6 +98,20 @@ def compile_model(model: Model, learning_rate=0.0005) -> Model:
     return model
 
 
+def compile_model_2(model: Model) -> Model:
+    """
+    Compile the CNN
+    """
+
+    model.compile(loss='binary_crossentropy',
+              optimizer='rmsprop',
+              metrics=['accuracy', Recall(), Precision()])
+
+    print("✅ Model compiled")
+
+    return model
+
+
 
 def train_model(
         model: Model,
@@ -74,7 +119,7 @@ def train_model(
         y,
         batch_size=32,
         patience=2,
-        epochs=10,
+        epochs=20,
         validation_data=None, # overrides validation_split
         validation_split=0.2
     ) -> Tuple[Model, dict]:
@@ -131,7 +176,9 @@ def evaluate_model(
 
     loss = metrics["loss"]
     accuracy = metrics["accuracy"]
+    recall = metrics["recall"]
+    precision = metrics["precision"]
 
-    print(f"✅ Model evaluated, accuracy: {round(accuracy, 2)}")
+    print(f"✅ Model evaluated, accuracy: {round(accuracy, 2)}, recall: {round(recall, 2)}, precision: {round(precision, 2)}")
 
-    return metrics
+    return accuracy, recall, precision
