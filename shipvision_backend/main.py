@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 def transform_train():
-    """ returns X_test_preproc, y_test with a shape (n_samples, 80, 80, 3) """
+    """ returns X_test_preproc, y_test with a shape (n_samples, 80, 80, 3) or (n_samples, 80, 80, 3) """
    #define the path to Json file
     json_path = os.path.expanduser(os.path.join(LOCAL_REGISTRY_PATH,'raw_data','shipsnet.json'))
 
@@ -36,21 +36,32 @@ def transform_train():
                                                     test_size=0.3,
                                                     stratify=y)
 
-    #transform features into an array
-    X_train_preproc= transform(X_train)
-
-    X_test_preproc= transform(X_test)
-
-    # Transform target into a dataframe
+    # Transform X_train and X_test into (80, 80, 3) array
+   # X_train_preproc= transform(X_train)
+   # X_test_preproc= transform(X_test)
 
 
 
+    # Transform X_train and X_test into (80, 80, 1) array
+    X_train_preproc = rgb_to_grayscale(X_train)
+    X_test_preproc = rgb_to_grayscale(X_test)
 
-    # initializing the model
-    model= initialize_model()
 
-    #compiling the model
-    model= compile_model(model)
+
+
+
+    # Initializing the model - V1
+    # model= initialize_model_1()
+
+    # Initializing the model - V2
+    model= initialize_model_2()
+
+    # Compiling the model - V1
+    #model= compile_model_1(model)
+
+    # Compiling the model - V2
+    model= compile_model_2(model)
+
 
     #training the model
     model, history = train_model(model,
@@ -58,7 +69,7 @@ def transform_train():
         y_train,
         batch_size=32,
         patience=2,
-        epochs=10,
+        epochs=15,
         validation_data=None, # overrides validation_split
         validation_split=0.2)
 
@@ -77,40 +88,24 @@ def evaluation(X_test_preproc, y_test):
     #load the model
     model=load_model()
 
+
     #evaluate the model
-    accuracy= evaluate_model (model,
+    accuracy, recall, precision = evaluate_model (model,
                     X_test_preproc,
                     y_test,
                     )
     print('The accuracy is: ' , accuracy)
+    print('The recall is: ' , recall)
+    print('The precision is: ' , precision)
+
+
 
 def pred( X_pred:list )-> int:
     """ Returns the prediction (ship or no ship) given a list of RGB pixels corresponding"""
 
-#     image_array = np.array(X_pred)
 
-# # Extract the R, G, and B channels
-#     R_data = image_array[0:6400]
-#     G_data = image_array[6400:2*6400]
-#     B_data = image_array[2*6400:]
+    X_pred_preproc= rgb_to_grayscale(X_pred)
 
-#     # Reshape each channel into an 80x80 array
-#     R = R_data.reshape((80, 80))
-#     G = G_data.reshape((80, 80))
-#     B = B_data.reshape((80, 80))
-
-#     # Stack the R, G, and B channels to form the image
-#     image_rgb = np.stack((R, G, B), axis=-1)
-
-#     print(image_rgb.shape)
-
-#     # Plot the image
-#     plt.imshow(image_rgb)
-#     plt.axis('off')  # Optional: Hide axes
-#     plt.show()
-
-
-    X_pred_preproc= transform(X_pred)
     #load the model
     model= get_model_instance()
 
