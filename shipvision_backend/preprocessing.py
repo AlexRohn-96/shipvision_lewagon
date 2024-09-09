@@ -63,7 +63,7 @@ def rgb_to_grayscale(X):
 
             X_gray.append(gray_img)
 
-        return np.array(X_gray)
+
 
     else:
          # Split the flattened list into R, G, and B channels
@@ -77,6 +77,7 @@ def rgb_to_grayscale(X):
 
             # Reshape to (80, 80, 1)
             gray_img = gray_img.reshape(80, 80, 1)
-            gray_img = gray_img.reshape(1, 80, 80, 1)
 
-            return gray_img
+            X_gray.append(gray_img)
+
+    return np.array(X_gray)

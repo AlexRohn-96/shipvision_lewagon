@@ -91,7 +91,7 @@ def compile_model_1(model: Model) -> Model:
 
     model.compile(loss='binary_crossentropy',
               optimizer='adam',
-              metrics=['accuracy'])
+              metrics=['accuracy', Recall(), Precision()])
 
     print("✅ Model compiled")
 
