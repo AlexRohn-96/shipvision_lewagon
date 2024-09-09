@@ -47,7 +47,7 @@ def transform_train():
 
 
     # initializing the model
-    model= initialize_model(input_shape= (80,80,3))
+    model= initialize_model()
 
     #compiling the model
     model= compile_model(model)
@@ -116,6 +116,8 @@ def pred( X_pred:list )-> int:
 
     #predict from an array and return 0 or 1
     y_pred = model.predict(X_pred_preproc)
+
+    breakpoint()
 
     if y_pred[0] > 0.5:
         predicted_class = 1
