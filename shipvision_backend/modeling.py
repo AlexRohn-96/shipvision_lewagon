@@ -21,8 +21,6 @@ print(f"\n✅ TensorFlow loaded ({round(end - start, 2)}s)")
 def initialize_model():
     model = Sequential()
 
-    model.add(layers.Rescaling(1./255, input_shape = (80, 80, 3)))
-
 
 ### First Convolution & MaxPooling
     model.add(layers.Conv2D(8, (4,4), input_shape=(80, 80, 3), padding='same', activation="relu"))
