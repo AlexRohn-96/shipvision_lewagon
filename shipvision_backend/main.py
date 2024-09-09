@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 def transform_train():
-    """ returns X_test_preproc, y_test with a shape (n_samples, 80, 80, 3) or (n_samples, 80, 80, 3) """
+    """ returns X_test_preproc, y_test with a shape (n_samples, 80, 80, 3) or (n_samples, 80, 80, 1) """
    #define the path to Json file
     json_path = os.path.expanduser(os.path.join(LOCAL_REGISTRY_PATH,'raw_data','shipsnet.json'))
 
@@ -37,12 +37,12 @@ def transform_train():
                                                     stratify=y)
 
     # Transform X_train and X_test into (80, 80, 3) array
-   # X_train_preproc= transform(X_train)
-   # X_test_preproc= transform(X_test)
+    #X_train_preproc= transform(X_train)
+    #X_test_preproc= transform(X_test)
 
 
 
-    # Transform X_train and X_test into (80, 80, 1) array
+    # Transform X_train and X_test into (n, 80, 80, 1) array
     X_train_preproc = rgb_to_grayscale(X_train)
     X_test_preproc = rgb_to_grayscale(X_test)
 
@@ -51,7 +51,7 @@ def transform_train():
 
 
     # Initializing the model - V1
-    # model= initialize_model_1()
+    #model= initialize_model_1()
 
     # Initializing the model - V2
     model= initialize_model_2()
@@ -103,8 +103,11 @@ def evaluation(X_test_preproc, y_test):
 def pred( X_pred:list )-> int:
     """ Returns the prediction (ship or no ship) given a list of RGB pixels corresponding"""
 
-
+    # Transform to (1, 80, 80, 1) array
     X_pred_preproc= rgb_to_grayscale(X_pred)
+
+    # Transform to (1, 80, 80, 3) array
+    #X_pred_preproc = transform(X_pred)
 
     #load the model
     model= get_model_instance()
