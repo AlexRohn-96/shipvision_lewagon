@@ -9,18 +9,27 @@ import logging
 from google.cloud import storage
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
 
 # Get variables from .env
 BUCKET_NAME = os.getenv('BUCKET_NAME')
 model_instance = None  # This will hold the singleton model instance
 
-logging.basicConfig(filename='shipvision_backend/app.log', level=logging.DEBUG,format='%(asctime)s - %(levelname)s - %(message)s')
+# Set up logging to a file
+logging.basicConfig(
+    filename='shipvision_backend/app.log',
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+    )
 
 def get_model_instance():
     """
     Loads the model from the cloud or local storage if it's not already loaded.
-    Returns the existing model instance if already loaded.
+    Returns:
+    --------
+    model_instance : tensorflow.keras.Model
+    The loaded model instance.
     """
     global model_instance
     if model_instance is None:
@@ -31,7 +40,8 @@ def get_model_instance():
     return model_instance
 
 def upload_to_gcs(local_path: str, bucket_name: str, destination_blob_name: str) -> None:
-    """Uploads a file to Google Cloud Storage"""
+    """Uploads a file to Google Cloud Storage
+    """
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
@@ -43,15 +53,18 @@ def upload_to_gcs(local_path: str, bucket_name: str, destination_blob_name: str)
 
 def save_model(model: keras.Model = None) -> None:
     """
-    Save trained model locally on the hard drive at f"{LOCAL_REGISTRY_PATH}/models/{timestamp}.h5"
+    Save trained model locally on the hard drive
+    at f"{LOCAL_REGISTRY_PATH}/models/{timestamp}.h5"
     """
 
+    # Generate a timestamp for the filename
     timestamp = time.strftime("%Y%m%d-%H%M%S")
 
 
 
-    # Save model locally
+    #construct the model save path
     model_path = os.path.expanduser(os.path.join(LOCAL_REGISTRY_PATH,'models',f"{timestamp}.h5"))
+    # Save model locally
     model.save(model_path)
 
     print("✅ Model saved locally")
@@ -100,10 +113,10 @@ def load_model_from_gcs() -> keras.Model:
     Attempt to load the most recent model from Google Cloud Storage (GCS).
     Return the model if found, or None if no model is found in GCS.
     """
-    #breakpoint()
+
     client = storage.Client()
     bucket = client.get_bucket(BUCKET_NAME)
-    #breakpoint()
+
     blobs = list(bucket.list_blobs(prefix=BUCKET_NAME))
     if not blobs:
         print("❌ No models found in GCS")
@@ -139,39 +152,3 @@ def load_model_from_local() -> keras.Model:
 
     print(f"Trying to load model from local: {most_recent_model_path_on_disk}")
     return keras.models.load_model(most_recent_model_path_on_disk)
-
-# def load_model() -> keras.Model:
-#     """
-#     Return a saved model:
-#     - locally (latest one in alphabetical order)
-
-#     Return None (but do not Raise) if no model is found
-
-#     """
-
-#     logging.debug("starrting loading model")
-#     # Get the latest model version name by the timestamp on disk
-#     local_model_directory = os.path.expanduser(os.path.join(LOCAL_REGISTRY_PATH,'models'))
-
-#     print(local_model_directory)
-#     logging.debug(f"starrting loading model: {local_model_directory}")
-#     local_model_paths = glob.glob(f"{local_model_directory}/*")
-#     logging.debug(f"local_model_directory: {local_model_directory}")
-
-#     if not local_model_paths:
-#         model_path = "/models/20240904-161447.h5"
-#         model = keras.models.load_model(model_path)
-#         return model
-
-#     most_recent_model_path_on_disk = sorted(local_model_paths)[-1]
-
-#     print(f"Trying to load model from: {most_recent_model_path_on_disk}")
-
-#     print(Fore.BLUE + f"\nLoad latest model from disk..." + Style.RESET_ALL)
-
-
-#     latest_model = keras.models.load_model(most_recent_model_path_on_disk)
-
-#     print("✅ Model loaded from local disk")
-
-#     return latest_model
