@@ -120,21 +120,27 @@ def train_model(
         batch_size=32,
         patience=2,
         epochs=20,
-        validation_data=None, # overrides validation_split
+        validation_data=None, # overrides validation_split if provided
         validation_split=0.2
     ) -> Tuple[Model, dict]:
 
     """
     Fit the model and return a tuple (fitted_model, history)
+    Returns:
+    --------
+    model : Model
+        The trained Keras model.
+    history : dict
+        Training history, which includes loss and accuracy metrics for each epoch.
     """
 
     print(Fore.BLUE + "\nTraining model..." + Style.RESET_ALL)
-
+    # EarlyStopping callback to avoid overfitting
     es = EarlyStopping(
         patience=patience,
         restore_best_weights=True,
     )
-
+    # Train the model
     history = model.fit(
         X,
         y,
@@ -144,7 +150,7 @@ def train_model(
         batch_size=batch_size,
         callbacks=[es],
     )
-
+    # Logging the training completion with min val accuracy
     print(f"✅ Model trained on {len(X)} rows with min val accuracy: {round(np.min(history.history['val_accuracy']), 2)}")
 
     return model, history
@@ -159,13 +165,16 @@ def evaluate_model(
     ) -> Tuple[Model, dict]:
     """
     Evaluate trained model performance on the dataset
+    print the metrics: accuracy, precision and recall
+    return A tuple containing the accuracy, recall,
+    and precision metrics.
     """
 
 
     if model is None:
         print(f"\n❌ No model to evaluate")
         return None
-
+    #evaluate the model
     metrics = model.evaluate(
         x=X_test,
         y=y_test_cat,
@@ -173,12 +182,13 @@ def evaluate_model(
         # callbacks=None,
         return_dict=True
     )
-
+    # Extract relevant metrics
     loss = metrics["loss"]
     accuracy = metrics["accuracy"]
     recall = metrics["recall"]
     precision = metrics["precision"]
 
+    #log and print the metrics
     print(f"✅ Model evaluated, accuracy: {round(accuracy, 2)}, recall: {round(recall, 2)}, precision: {round(precision, 2)}")
 
     return accuracy, recall, precision

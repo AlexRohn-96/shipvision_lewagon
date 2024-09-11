@@ -12,14 +12,19 @@ from PIL import Image
 import time
 
 def transform_train():
-    """ returns X_test_preproc, y_test with a shape (n_samples, 80, 80, 3) or (n_samples, 80, 80, 1) """
+    """ returns X_test_preproc, y_test with a shape
+    (n_samples, 80, 80, 3) or (n_samples, 80, 80, 1) """
    #define the path to Json file
-    json_path = os.path.expanduser(os.path.join(LOCAL_REGISTRY_PATH,'raw_data','shipsnet.json'))
+    json_path = os.path.expanduser(
+        os.path.join(
+            LOCAL_REGISTRY_PATH,'raw_data','shipsnet.json')
+        )
 
+    #load the data from json file
     with open(json_path) as file:
         data= json.load(file)
 
-
+    #convert into dataframe for easier handling
     data_df = pd.DataFrame(data)
 
 
@@ -46,9 +51,6 @@ def transform_train():
     # Transform X_train and X_test into (n, 80, 80, 1) array
     X_train_preproc = rgb_to_grayscale(X_train)
     X_test_preproc = rgb_to_grayscale(X_test)
-
-
-
 
 
     # Initializing the model - V1
@@ -102,31 +104,54 @@ def evaluation(X_test_preproc, y_test):
 
 
 def pred( X_pred:list )-> int:
-    """ Returns the prediction (ship or no ship) given a list of RGB pixels corresponding"""
+    """ Returns the prediction (ship or no ship)
+    given a list of RGB pixels corresponding
+
+    Args:
+        X_pred (list): A list of RGB pixel values representing an image.
+
+    Returns:
+        int: 1 if the model predicts a ship, 0 otherwise.
+    """
 
     # Transform to (1, 80, 80, 1) array
+    # Prepares the input to match the model's expected input shape
     X_pred_preproc= rgb_to_grayscale(X_pred)
 
     # Transform to (1, 80, 80, 3) array
     #X_pred_preproc = transform(X_pred)
 
-    #load the model
+    #load the pre-trained model instance
     model= get_model_instance()
 
     #predict from an array and return 0 or 1
     y_pred = model.predict(X_pred_preproc)
-
+    # Apply a threshold to determine the predicted class (0 for no ship, 1 for ship)
     if y_pred[0] > 0.5:
-        predicted_class = 1
+        predicted_class = 1 #ship detected
 
     else:
-        predicted_class = 0
+        predicted_class = 0 #no ship detected
 
     print('✅ Prediction :',  predicted_class)
 
     return predicted_class
 
 def generate_scene_with_model_gray_scale(image, model):
+    """
+    This function returns predictions and coordinates
+    from a scene which might contains ship. The scene is
+    cropped in several small images. The prediction are made
+    on the cropped images.
+    Args:
+        image (PIL.Image): The input scene image (can be RGB or grayscale).
+        model (tf.keras.Model): The trained model that predicts the presence of ships.
+
+    Returns:
+        tuple: A tuple containing:
+            - predictions (np.array): The model's predictions for each cropped patch.
+            - coordinates (list of tuple): The coordinates of the top-left corner of each patch.
+    """
     # Define parameters
     patch_size = 80
     stride = 20
@@ -139,7 +164,7 @@ def generate_scene_with_model_gray_scale(image, model):
     patches = []
     coordinates = []
 
-    breakpoint()
+
 
     # Extract patches and their coordinates
     for y in range(0, img_height - patch_size + 1, stride):
@@ -161,5 +186,5 @@ def generate_scene_with_model_gray_scale(image, model):
     prediction_time = time.time() - start_time
     print(f'Prediction time: {prediction_time:.2f} seconds')
 
-    breakpoint()
+
     return predictions, coordinates
